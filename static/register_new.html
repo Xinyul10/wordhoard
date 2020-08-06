@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+  <script>
+        function checkPassword() {
+            if (document.getElementById("password1").value!=document.getElementById("password2").value) {
+                alert("passwords don't match!");
+            } else {
+                document.getElementById("registerform").submit();
+            }
+        }
+  </script>
+<body>
+  <header>
+  <h1>Sleepy Heads</h1>
+  <nav>
+    <ul>
+      <li><a href="index.html">Welcome</a></li>
+      <li><a href="admin_management.html">Admin Page</a></li>
+      <li><a href="search_new.html">Search</a></li>
+      <li><a href="comment.html">Comments</a></li>
+    </ul>
+  </nav>
+</header>
+  <main>
+     <div id="login-box">
+       <div class="left">
+        <form class="register-form" action="/api/createuser" method="post">
+          <input type="text" name="username" placeholder="Username"/>
+          <input type="password" name="password" id="password1" placeholder="Password"/>
+          <input type="password" name="repeatedpassword" id="password2" placeholder=" Repeat Password"/>
+          <button class="clickme" onclick="checkPassword()">Register</button>
+        </form>
+          <!-- <button class="clickme" onclick="checkPassword()">Register</button> -->
+          <p class="message"> Already Registered? <a href="index.html"> Login </a>
+          </p>
+        </div>
+     </div>
+  </main>
+  
+</body>
+</html>

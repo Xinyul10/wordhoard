@@ -1,0 +1,154 @@
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+  <h1>Sleepy Heads</h1>
+  <nav>
+    <ul>
+      <li><a href="index.html">Welcome</a></li>
+	  <li><a href="admin_management.html">Admin Page</a></li>
+	  <li><a href="search_new.html">Search</a></li>
+      <li><a href="comment.html">Comments</a></li>
+    </ul>
+  </nav>
+</header>
+  <main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		// an enum denoting the types of inputs that we have to generate in forms.
+		const intypes = {
+			word:0, // words have text input boxes, and can become subqueries.
+			natural:1, // naturals have numerical input boxes.
+			string:2 // strings are like words, but cannot become subqueries.
+		};
+		
+		// an enum denoting the kinds of forms we can make.
+		const forms = {
+			rhyme:[intypes.word],
+			//pun:[intypes.word],
+			//simile:[intypes.word,intypes.word,intypes.word],
+			alliteration:[intypes.word],
+			syllables:[intypes.natural],
+			union:[intypes.word,intypes.word],
+			intersection:[intypes.word,intypes.word],
+			synonym:[intypes.word]
+			//regex:[intypes.string]
+		};
+		
+		// takes a div and fills it with a dropdown menu to select what kind of form the div should become.
+		function makeFormSelector(self) {
+			delete self.className;
+			self.innerHTML="";
+			dropdown = document.createElement("select");
+			dropdown.type="textbox";
+			for (type in forms) {
+				tmp = document.createElement("option");
+				tmp.value=type
+				tmp.innerText=type
+				dropdown.appendChild(tmp)
+			}
+			self.appendChild(dropdown);
+			select = document.createElement("button");
+			select.innerText="select";
+			select.onclick=function() {makeForm(self,dropdown.value);};
+			self.appendChild(select);
+		}
+		
+		function makeForm(self,formType) {
+			self.innerHTML="";
+			self.className=formType;
+			title = document.createElement("p");
+			title.innerText=formType
+			self.appendChild(title);
+			for (v in forms[formType]) {
+				tmp = document.createElement("input");
+				switch(forms[formType][v]) {
+					case intypes.word:
+						tmp.type="text";
+						recursebtn = document.createElement("button");
+						recursebtn.innerHTML="Subquery";
+						newdiv = document.createElement("div");
+						self.appendChild(tmp);
+						recursebtn.onclick = function(tmp,newdiv,recursebtn) {return function() {
+							self.replaceChild(newdiv,tmp); makeFormSelector(newdiv); self.removeChild(recursebtn);
+						};}(tmp,newdiv,recursebtn);
+						self.appendChild(recursebtn);
+						break;
+					case intypes.natural:
+						tmp.type="number";
+						self.appendChild(tmp);
+						break;
+					case intypes.string:
+						tmp.type="text";
+						self.appendChild(tmp);
+						break;
+				}
+				self.appendChild(document.createElement("br"));
+			}
+			delbtn = document.createElement("button");
+			delbtn.innerHTML="Back";
+			delbtn.onclick=function() {makeFormSelector(self)};;
+			self.appendChild(delbtn);
+		}
+		
+		
+		function submit() {
+			root = document.getElementById("root");
+			out = traverseForms(root);
+			console.log(out);
+			$.post("/api/search",{"data":JSON.stringify(out)},function(data,status,xhr) {
+				document.getElementById("searchresult").innerHTML=xhr.responseText;
+			}).fail(function(xhr,status,error) {
+				alert(xhr.responseText);
+			});
+			globalname = 65;
+			nameForms(root);
+		}
+		
+		function nameForms(self) {
+			for (let c = 0; c < self.children.length; c++) {
+				if (self.children[c].tagName=="DIV") {
+					nameForms(self.children[c]);
+				}
+			}
+			// name self
+			if (self.className!="intersection") {
+				self.children[0].innerText=self.className + " name: " + String.fromCharCode(globalname);
+				globalname++;
+			}
+		}
+		
+		function traverseForms(self) {
+			let accumulator = [];
+			for (let c = 0; c < self.children.length; c++) {
+				if (self.children[c].tagName=="INPUT") {
+					accumulator.push(self.children[c].value);
+				} else if (self.children[c].tagName=="DIV") {
+					accumulator.push(traverseForms(self.children[c]));
+				}
+			}
+			let tmp = {};
+			tmp[self.className]=accumulator;
+			return tmp;
+		}
+		
+		</script>
+
+     <div id="search">
+         <div id="root"></div>
+       <button class="clickme" onclick="submit();"> Submit </button>
+    
+       <script>
+      makeFormSelector(document.getElementById('root'));
+	  </script>
+	  </div>
+	  <div id="search-box">
+	  <p id="searchresult">The results are as follows:</p>
+	  <br>
+	</div>
+  </main>
+  
+</body>
+</html>

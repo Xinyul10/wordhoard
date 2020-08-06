@@ -1,0 +1,42 @@
+<html>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		const schemas = {
+			addword:{url:"/api/addword",args:["word"]},
+			delword:{url:"/api/delword",args:["word"]},
+			setsyllables:{url:"/api/setsyllables",args:["word","syllables"]},
+			addrhyme:{url:"/api/addrhyme",args:["word1","word2"]},
+			delrhyme:{url:"/api/delrhyme",args:["word1","word2"]}
+		}
+		sources = ["#word1","#word2"]
+		function runschema(s) {
+			let form = {}
+			for (let x = 0; x < s.args.length; x++) {
+				form[s.args[x]]=$(sources[x]).val()
+			}
+			console.log(s.url)
+			console.log(form)
+			$.post(s.url,form, function(data,status,jqXHR) {
+				alert(data);
+			}).fail( function(jqXHR, textStatus, errorThrown) {
+				alert("failed:" + jqXHR.responseText);
+			});
+		}
+	</script>
+	<input type="text" id="word1"><input type="text" id="word2">
+	<br>
+	Word Management
+	<br>
+	<button onclick="runschema(schemas.addword)">Add Word</button>
+	<br>
+	<button onclick="runschema(schemas.delword)">Delete Word</button>
+	<br>
+	<button onclick="runschema(schemas.setsyllables)">Set Syllables</button>
+	<br>
+	Rhyme Management
+	<br>
+	<button onclick="runschema(schemas.addrhyme)">Add Rhyme</button>
+	<br>
+	<button onclick="runschema(schemas.delrhyme)">Delete Rhyme</button>
+	<br>
+</html>

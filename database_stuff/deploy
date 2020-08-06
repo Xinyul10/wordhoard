@@ -1,0 +1,6 @@
+#!/bin/bash
+cat schema.sql | sqlconsole # set up the schema
+cat words.sql | sqlconsole # insert words
+cat synsets.sql | sqlconsole # insert synsets
+cat synonyms.sql | sqlconsole # associate words with synsets
+cat users.sql | sqlconsole # add an admin user

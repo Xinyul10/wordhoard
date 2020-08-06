@@ -1,0 +1,21 @@
+<html>
+    <script>
+        function checkPassword() {
+            if (document.getElementById("password1").value!=document.getElementById("password2").value) {
+                alert("passwords don't match!");
+            } else {
+                document.getElementById("registerform").submit();
+            }
+        }
+    </script>
+    <h1>Registration Page</h1>
+    <form action="/api/createuser" method="post" style="margin:auto;" id="registerform">
+        New Username:<input type="text" name="username">
+        <br>
+        New Password:<input type="password" name="password" id="password1">
+        <br>
+        Repeat Password:<input type="password" name="repeatedpassword" id="password2">
+        <br>
+    </form>
+    <button onclick="checkPassword()">Register</button>
+</html>

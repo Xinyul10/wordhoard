@@ -1,0 +1,67 @@
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		const schemas = {
+			addword:{url:"/api/addword",args:["word","pronunciation"]},
+			updateword:{url:"/api/updateword",args:["word","pronunciation"]},
+			delword:{url:"/api/delword",args:["word"]},
+			getsynset:{url:"/api/getsynset",args:["word"]},
+			addsynset:{url:"/api/addsynset",args:["synset"]},
+			delsynset:{url:"/api/delsynset",args:["synset"]},
+			assocword:{url:"/api/assocword",args:["synset","word"]},
+			disassocword:{url:"/api/disassocword",args:["synset","word"]}
+		}
+		sources = ["#word1","#word2"]
+		function runschema(s) {
+			let form = {}
+			for (let x = 0; x < s.args.length; x++) {
+				form[s.args[x]]=$(sources[x]).val()
+			}
+			console.log(s.url)
+			console.log(form)
+			$.post(s.url,form, function(data,status,jqXHR) {
+				alert(data);
+			}).fail( function(jqXHR, textStatus, errorThrown) {
+				alert("failed:" + jqXHR.responseText);
+			});
+		}
+	</script>
+<body>
+  <header>
+  <h1>Sleepy Heads</h1>
+  <nav>
+    <ul>
+      <li><a href="index.html">Welcome</a></li>
+      <li><a href="admin_management.html">Admin Management</a></li>
+      <li><a href="comment_view.html">User Comment</a></li>
+    </ul>
+  </nav>
+</header>
+  <main>
+	<div id="admin-box">
+		<div class="left">
+			<input type="text" name="word1" id="word1" placeholder="Input 1" />
+			<h1>Word Management</h1>
+				<button class="Management darkblue" onclick="runschema(schemas.addword)">Add Word</button>
+				<button class="Management lightblue" onclick="runschema(schemas.updateword)">Update Word</button>
+				<button class="Management lightblue" onclick="runschema(schemas.assocword)">Associate Word</button>
+				<button class="Management red" onclick="runschema(schemas.disassocword)">Disassociate Word</button>
+				<button class="Management red" onclick="runschema(schemas.delword)">Delete Word</button>
+		</div> 
+		<div class="right">
+			<input type="text" name="word2" id="word2" placeholder="Input 2" />
+			<h1>Phyme Management</h1>
+				<button class="Management darkblue" onclick="runschema(schemas.addsynset)">Add Synset</button>
+				<button class="Management lightblue" onclick="runschema(schemas.getsynset)">Get Synsets</button>
+				<button class="Management red" onclick="runschema(schemas.delsynset)">Delete Synset</button>
+		</div>
+  <div class="or">OR</div>
+    </div>
+    
+  </main>
+  
+</body>
+</html>
